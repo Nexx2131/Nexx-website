@@ -58,8 +58,8 @@ window.NEXX = {
   // e.g. "https://www.instagram.com/NAME/", "https://t.me/GROUP", "https://discord.gg/CODE".
   // An icon shows only once its link is filled in.
   socials: [
-    { id: "instagram", label: "Instagram", href: "" },
-    { id: "telegram",  label: "Telegram",  href: "" },
-    { id: "discord",   label: "Discord",   href: "" }
+    { id: "instagram", label: "Instagram", href: "https://www.instagram.com/cocnexx/" },
+    { id: "telegram",  label: "Telegram",  href: "https://t.me/cocnexx" },
+    { id: "discord",   label: "Discord",   href: "" } // TODO: the owner sends the server invite later
   ]
 };
