@@ -60,7 +60,7 @@
   }
   function header() {
     return '' +
-      '<div class="demo-bar"><b>Rough draft</b> · <span class="long">local preview, buying is a demo and takes no money</span><span class="short">demo only, no money taken</span></div>' +
+      '<div class="demo-bar"><b>Rough draft</b> · <span class="long">early preview, buying is a demo and takes no money</span><span class="short">demo only, no money taken</span></div>' +
       '<div class="wrap">' +
         '<a class="brand" href="index.html"><span class="mark">' + ICON.mark + '</span>NEXX</a>' +
         '<nav class="nav" aria-label="Main">' + navLinks(false) + '</nav>' +
