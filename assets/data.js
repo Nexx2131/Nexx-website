@@ -52,5 +52,14 @@ window.NEXX = {
   support: {
     label: "Contact the seller",
     href: "#" // TODO: real support link (Discord, WhatsApp, Telegram…)
-  }
+  },
+
+  // Round icons at the bottom of every page. Put the full link between the quotes,
+  // e.g. "https://www.instagram.com/NAME/", "https://t.me/GROUP", "https://discord.gg/CODE".
+  // An icon shows only once its link is filled in.
+  socials: [
+    { id: "instagram", label: "Instagram", href: "" },
+    { id: "telegram",  label: "Telegram",  href: "" },
+    { id: "discord",   label: "Discord",   href: "" }
+  ]
 };

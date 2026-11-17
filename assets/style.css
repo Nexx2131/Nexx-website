@@ -274,6 +274,15 @@ td.num { font-weight: 800; font-size: 20px; }
 .site-foot a { text-decoration: none; color: var(--muted); display: block; padding: 3px 0; transition: color .2s, translate .25s var(--ease); }
 @media (hover: hover) { .site-foot .cols a:hover { color: var(--ink); translate: 3px 0; } }
 .site-foot .fine { font-size: 13px; color: var(--muted); margin-top: 20px; }
+/* Instagram / Telegram / Discord: round buttons under the footer's NEXX text */
+.site-foot .socials { display: flex; gap: 10px; margin-top: 16px; }
+.site-foot .socials a { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border-radius: 50%;
+  background: var(--tile); color: var(--ink); border: 1px solid var(--line);
+  transition: background .2s, color .2s, border-color .2s, transform .3s var(--spring); }
+.site-foot .socials svg { width: 20px; height: 20px; fill: currentColor; }
+.site-foot .socials a:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.site-foot .socials a:active { transform: scale(.92); }
+@media (hover: hover) { .site-foot .cols .socials a:hover { background: var(--ink); border-color: var(--ink); color: #fff; translate: none; transform: translateY(-3px); } }
 
 /* =====================================================================
    Motion. Everything that starts hidden is under .js, so the pages
@@ -549,4 +558,5 @@ details[open] > :not(summary) { animation: nx-drop .35s var(--ease) both; }
   .tick-draw path { animation: none; stroke-dashoffset: 0; }
   .tile.product:hover, .pack:hover, .tut:hover, .grid > .tile:hover, .btn:hover, .btn:active, .product:hover .icon, .chip:active { transform: none; }
   .site-foot .cols a:hover { translate: none; }
+  .site-foot .cols .socials a:hover, .site-foot .socials a:active { transform: none; }
 }
