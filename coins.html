@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#EDEDEF">
+<script>document.documentElement.className += " js";</script>
+<title>NEXX coins — buy running time</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body data-page="coins">
+<header id="site-head"></header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <span class="pill butter"><span class="coin-dot"></span>&nbsp;NEXX coins</span>
+      <h1>Coins are<br>running time.</h1>
+      <p class="lead">One coin balance on your NEXX account pays for every NEXX app. Coins go down only while a bot runs, by the server's clock.</p>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Coin packs</span>
+        <h2>Pick a pack</h2>
+        <p class="note warn small"><b>Sample prices.</b> These prices and the checkout are placeholders for the draft. Buying here takes no money and adds no coins.</p>
+      </div>
+      <div class="grid four" data-packages></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="section-head"><span class="eyebrow">Rates</span><h2>How long coins last</h2></div>
+      <div data-usage=""></div>
+      <p class="muted small" style="margin-top:12px">Two devices running at once use coins twice as fast. Pausing, logging in and adding a new phone cost nothing.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="grid two">
+        <div class="tile sky">
+          <span class="eyebrow">Have a code?</span>
+          <h3>Redeem it in the app</h3>
+          <ol class="steps">
+            <li>Open NEXX Bot or NEXX Farm.</li>
+            <li>On the first page, choose <b style="display:inline">Redeem code</b>.</li>
+            <li>Type your NEXX account ID and the code. Each code works once.</li>
+          </ol>
+        </div>
+        <div class="faq">
+          <details open><summary>When do coins go down?</summary><p>Only while a run is going. Time is reserved a little ahead; a normal Stop gives the unused part back.</p></details>
+          <details><summary>What happens at 0 coins?</summary><p>You can still log in. A run waits for coins and goes on by itself when coins are added.</p></details>
+          <details><summary>If the app crashes or the internet drops?</summary><p>At most the last 45 seconds that were reserved can be used up. Internet is needed the whole time a run goes.</p></details>
+          <details><summary>Are coins money?</summary><p>No. NEXX coins are prepaid bot running time, not a currency or an investment.</p></details>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Demo checkout: nothing here is sent anywhere -->
+<div class="modal-back" id="checkout" role="dialog" aria-modal="true" aria-labelledby="co-title">
+  <div class="modal">
+    <div class="modal-top">
+      <h3 id="co-title">Buy coins</h3>
+      <button class="x" type="button" data-close aria-label="Close">×</button>
+    </div>
+    <form novalidate>
+      <div class="summary-box"><b data-sum-coins></b><span data-sum-price></span></div>
+      <div class="field">
+        <label for="acct">Your NEXX account ID</label>
+        <input id="acct" autocomplete="off" placeholder="the ID you log in with" maxlength="20">
+        <span class="err">Enter the 3–20 character ID you log in with.</span>
+      </div>
+      <div class="field">
+        <span class="label">Pay with</span>
+        <div class="opts" data-pay></div>
+      </div>
+      <p class="small muted" style="margin-bottom:14px">Demo checkout: no payment is taken and nothing is sent.</p>
+      <button class="btn block" type="submit" data-submit><span class="st st-idle">Place order (demo)</span><span class="st st-busy"><span class="spin"></span>Placing order…</span></button>
+    </form>
+    <div class="done-box" hidden>
+      <div class="tick">✓</div>
+      <h3>Demo order placed</h3>
+      <p class="muted" data-done-text></p>
+      <button class="btn" type="button" data-close>Close</button>
+    </div>
+  </div>
+</div>
+
+<footer id="site-foot"></footer>
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

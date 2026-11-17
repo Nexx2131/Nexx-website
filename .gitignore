@@ -1,0 +1,7 @@
+# The six design options from before the look was chosen: kept on the PC for reference, not published.
+designs/
+
+# Windows / editor clutter
+Thumbs.db
+desktop.ini
+*.tmp

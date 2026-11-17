@@ -1,0 +1,552 @@
+/* NEXX website — rough UI. Look taken from the NEXX Farm marketing sheet (Bento). */
+:root {
+  --ground: #EDEDEF;
+  --ink: #141414;
+  --muted: #55555B;
+  --tile: #FFFFFF;
+  --line: #D9D9DE;
+  --lilac: #D8CCFA;   /* NEXX Bot */
+  --mint: #BDEBD2;    /* NEXX Farm */
+  --butter: #FBE28C;  /* coins */
+  --sky: #CFE3FA;     /* tutorials */
+  --peach: #F8CDB9;   /* warnings */
+  --radius: 28px;
+  --radius-sm: 16px;
+  --wrap: 1120px;
+  --font: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --ease: cubic-bezier(.2, .8, .2, 1);
+  --spring: cubic-bezier(.3, 1.6, .5, 1);
+  --ok: #1f9d55;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+[hidden] { display: none !important; }
+[id] { scroll-margin-top: 130px; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+body {
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.5;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+main { flex: 1; }
+img, svg { display: block; max-width: 100%; }
+a { color: inherit; }
+button { font: inherit; color: inherit; cursor: pointer; }
+
+.wrap { width: 100%; max-width: var(--wrap); margin: 0 auto; padding: 0 16px; }
+@media (min-width: 720px) { .wrap { padding: 0 32px; } }
+/* iPhone notch / rounded corners when turned sideways */
+.wrap { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+@media (min-width: 720px) { .wrap { padding-left: max(32px, env(safe-area-inset-left, 0px)); padding-right: max(32px, env(safe-area-inset-right, 0px)); } }
+
+/* ---------- demo banner ---------- */
+.demo-bar {
+  background: var(--ink); color: #fff; font-size: 13px; text-align: center;
+  padding: 6px 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.demo-bar b { color: var(--butter); font-weight: 600; }
+
+/* ---------- header ---------- */
+.site-head { position: sticky; top: 0; z-index: 20; background: rgba(237,237,239,.92); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); transition: box-shadow .3s var(--ease); }
+.site-head.scrolled { box-shadow: 0 10px 30px -18px rgba(20,20,20,.45); }
+.site-head .wrap { display: flex; align-items: center; gap: 16px; height: 64px; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 800; font-size: 20px; letter-spacing: -0.02em; }
+.mark { width: 36px; height: 36px; border-radius: 11px; background: var(--ink); display: grid; place-items: center; flex: none; }
+.mark svg { width: 36px; height: 36px; }
+.nav { display: none; gap: 4px; margin-left: auto; }
+.nav a { text-decoration: none; padding: 8px 12px; border-radius: 999px; font-weight: 500; color: var(--muted); transition: color .2s, background-color .2s; }
+@media (hover: hover) { .nav a:hover { color: var(--ink); background: var(--tile); } }
+.nav a.on { color: var(--ink); background: var(--tile); }
+.site-head .head-cta { margin-left: auto; }
+.menu-btn { margin-left: 4px; width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--line); background: var(--tile); display: grid; place-items: center; }
+.menu-btn svg { width: 22px; height: 22px; }
+/* burger that turns into an X */
+.menu-btn .bars { position: relative; display: block; width: 20px; height: 14px; }
+.menu-btn .bars i { position: absolute; left: 0; right: 0; height: 2px; border-radius: 2px; background: currentColor; transition: top .3s var(--ease), transform .3s var(--ease), opacity .2s; }
+.menu-btn .bars i:nth-child(1) { top: 0; }
+.menu-btn .bars i:nth-child(2) { top: 6px; }
+.menu-btn .bars i:nth-child(3) { top: 12px; }
+.menu-btn[aria-expanded="true"] .bars i:nth-child(1) { top: 6px; transform: rotate(45deg); }
+.menu-btn[aria-expanded="true"] .bars i:nth-child(2) { opacity: 0; transform: scaleX(.2); }
+.menu-btn[aria-expanded="true"] .bars i:nth-child(3) { top: 6px; transform: rotate(-45deg); }
+/* phone menu: slides open; closed links are hidden from taps and the keyboard */
+.mobile-nav { display: none; border-top: 1px solid var(--line); background: var(--ground); }
+.mobile-nav.open { display: block; }
+.js .mobile-nav { display: grid; grid-template-rows: 0fr; visibility: hidden; border-top-width: 0; transition: grid-template-rows .4s var(--ease), visibility 0s linear .4s; }
+.js .mobile-nav.open { grid-template-rows: 1fr; visibility: visible; border-top-width: 1px; transition: grid-template-rows .4s var(--ease), visibility 0s; }
+.mobile-nav .inner { min-height: 0; overflow: hidden; }
+.mobile-nav.open .inner { max-height: calc(100vh - 110px); max-height: calc(100svh - 110px); overflow-y: auto; overscroll-behavior: contain; }
+.mobile-nav a { display: block; padding: 14px 16px; text-decoration: none; font-weight: 600; border-bottom: 1px solid var(--line); }
+.mobile-nav a { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.mobile-nav a.on { background: var(--tile); }
+.js .mobile-nav.open a { animation: nx-slide-in .4s var(--ease) both; animation-delay: calc(var(--i, 0) * 40ms + 60ms); }
+@media (min-width: 900px) {
+  .nav { display: flex; }
+  .site-head .head-cta { margin-left: 8px; }
+  .menu-btn, .mobile-nav, .mobile-nav.open, .js .mobile-nav, .js .mobile-nav.open { display: none; }
+}
+
+/* ---------- buttons, pills ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 48px; padding: 0 22px; border-radius: 999px; border: 0;
+  background: var(--ink); color: #fff; font-weight: 600; text-decoration: none;
+  transition: transform .2s var(--ease), opacity .12s ease, background-color .3s ease, box-shadow .2s var(--ease);
+  position: relative; overflow: hidden; isolation: isolate; -webkit-tap-highlight-color: transparent;
+}
+@media (hover: hover) { .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 22px -12px rgba(20,20,20,.55); } }
+.btn:active { transform: translateY(0) scale(.97); opacity: .9; box-shadow: none; }
+.btn.light { background: var(--tile); color: var(--ink); border: 1px solid var(--line); }
+.btn.small { min-height: 40px; padding: 0 16px; font-size: 14px; }
+.btn.block { width: 100%; }
+.btn[aria-disabled="true"], .btn:disabled { opacity: .45; pointer-events: none; }
+.btn svg { width: 18px; height: 18px; }
+.pill { display: inline-block; padding: 4px 12px; border-radius: 999px; background: var(--tile); font-size: 13px; font-weight: 600; }
+.pill.ink { background: var(--ink); color: #fff; }
+.pill.butter { background: var(--butter); }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+/* ---------- type ---------- */
+h1, h2, h3 { letter-spacing: -0.03em; line-height: 1.05; font-weight: 800; }
+h1 { font-size: clamp(40px, 9vw, 84px); }
+/* phones turned sideways: size the title by the screen height too */
+h1 { font-size: clamp(40px, min(9vw, 14svh), 84px); }
+h2 { font-size: clamp(28px, 5vw, 44px); }
+h3 { font-size: 22px; letter-spacing: -0.02em; }
+.lead { font-size: clamp(17px, 2.2vw, 20px); color: var(--muted); max-width: 640px; }
+.muted { color: var(--muted); }
+.small { font-size: 14px; }
+.eyebrow { font-size: 14px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+
+section { padding: 40px 0; }
+@media (min-width: 720px) { section { padding: 64px 0; } }
+.section-head { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+
+/* ---------- hero ---------- */
+.hero { padding-top: 40px; }
+.hero h1 { margin: 14px 0 16px; }
+.hero .row { margin-top: 24px; }
+
+/* ---------- tiles ---------- */
+.grid { display: grid; gap: 14px; grid-template-columns: 1fr; }
+.grid > * { min-width: 0; } /* a wide table scrolls inside its tile instead of pushing the page sideways */
+@media (min-width: 720px) {
+  .grid.two { grid-template-columns: 1fr 1fr; }
+  .grid.three { grid-template-columns: repeat(3, 1fr); }
+  .grid.four { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1000px) { .grid.four { grid-template-columns: repeat(4, 1fr); } }
+.tile { background: var(--tile); border-radius: var(--radius); padding: 24px; display: flex; flex-direction: column; gap: 12px; }
+@media (min-width: 720px) { .tile { padding: 32px; } }
+.tile.lilac { background: var(--lilac); }
+.tile.mint { background: var(--mint); }
+.tile.butter { background: var(--butter); }
+.tile.sky { background: var(--sky); }
+.tile.peach { background: var(--peach); }
+.tile.ink { background: var(--ink); color: #fff; }
+.tile.ink .muted { color: #B7B7BD; }
+.tile .big { font-size: clamp(56px, 10vw, 96px); font-weight: 800; letter-spacing: -0.05em; line-height: .9; }
+.tile .spacer { flex: 1; }
+
+.product { min-height: 360px; }
+.product .icon { width: 64px; height: 64px; border-radius: 20px; background: var(--ink); display: grid; place-items: center; }
+.product .icon svg { width: 32px; height: 32px; }
+.product ul { list-style: none; display: grid; gap: 8px; }
+.product li { display: flex; gap: 10px; align-items: flex-start; }
+.product li::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--ink); margin-top: 9px; flex: none; }
+.rate { font-weight: 600; }
+
+/* ---------- steps ---------- */
+.steps { list-style: none; counter-reset: s; display: grid; gap: 12px; }
+.steps > li { counter-increment: s; background: var(--tile); border-radius: var(--radius-sm); padding: 16px 16px 16px 64px; position: relative; }
+.steps > li::before {
+  content: counter(s); position: absolute; left: 16px; top: 14px;
+  width: 34px; height: 34px; border-radius: 50%; background: var(--ink); color: #fff;
+  display: grid; place-items: center; font-weight: 700;
+}
+.steps > li b { display: block; }
+
+/* ---------- plain checklist ---------- */
+.checks { list-style: none; display: grid; gap: 12px; }
+.checks > li { position: relative; padding-left: 36px; }
+.checks > li::before { content: "✓"; position: absolute; left: 0; top: 1px; width: 24px; height: 24px; border-radius: 50%; background: var(--ink); color: #fff; font-size: 13px; display: grid; place-items: center; }
+.checks.titled > li > b { display: block; }
+
+/* ---------- tables ---------- */
+.table-wrap { overflow-x: auto; border-radius: var(--radius-sm); background: var(--tile); }
+table { width: 100%; border-collapse: collapse; min-width: 300px; }
+th { white-space: nowrap; }
+td { overflow-wrap: break-word; }
+@media (max-width: 480px) { th, td { padding: 12px 10px; } td.num { font-size: 18px; } }
+th, td { text-align: left; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+th { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; }
+tr:last-child td { border-bottom: 0; }
+td.num { font-weight: 800; font-size: 20px; }
+
+/* ---------- coin packages ---------- */
+.pack { position: relative; border: 2px solid transparent; }
+.pack.popular { border-color: var(--ink); }
+.pack .flag { position: absolute; top: 16px; right: 16px; }
+.pack .coins { font-size: 56px; font-weight: 800; letter-spacing: -0.05em; line-height: .9; }
+.pack .price { font-size: 26px; font-weight: 700; }
+.pack .sample { font-size: 12px; color: var(--muted); }
+.coin-dot { display: inline-block; width: 18px; height: 18px; border-radius: 50%; background: var(--butter); border: 2px solid var(--ink); vertical-align: -2px; }
+
+/* ---------- tutorials ---------- */
+.chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+.chip { border: 1px solid var(--line); background: var(--tile); border-radius: 999px; padding: 8px 16px; font-weight: 600; font-size: 14px; }
+.chip.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+.tut { padding: 0; overflow: hidden; }
+.tut .video {
+  aspect-ratio: 16 / 9; background: repeating-linear-gradient(135deg, #e4e4e8 0 14px, #ececf0 14px 28px);
+  display: grid; place-items: center; color: var(--muted); font-weight: 600; font-size: 14px;
+}
+.tut .video span { background: var(--tile); padding: 6px 14px; border-radius: 999px; display: inline-flex; gap: 8px; align-items: center; }
+.tut .body { padding: 20px 24px 24px; display: flex; flex-direction: column; gap: 10px; }
+.tut details { border-top: 1px solid var(--line); padding-top: 10px; }
+.tut summary { cursor: pointer; font-weight: 600; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+.tut summary::-webkit-details-marker { display: none; }
+.tut summary::after { content: "+"; font-size: 22px; font-weight: 400; }
+.tut details[open] summary::after { content: "–"; }
+.tut ol { padding-left: 20px; display: grid; gap: 6px; margin-top: 10px; }
+.tag { font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px; align-self: flex-start; }
+.tag.bot { background: var(--lilac); }
+.tag.farm { background: var(--mint); }
+.tag.coins { background: var(--butter); }
+.tag.all { background: var(--sky); }
+
+/* ---------- downloads ---------- */
+.dl-meta { display: grid; grid-template-columns: auto 1fr; gap: 4px 16px; font-size: 14px; }
+.dl-meta dt { color: var(--muted); }
+.dl-meta dd { font-weight: 600; word-break: break-all; }
+.status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #999; margin-right: 6px; vertical-align: 1px; }
+.status-dot.live { background: #1f9d55; }
+.status-dot.off { background: #d64545; }
+
+/* ---------- callouts, FAQ ---------- */
+.note { background: var(--tile); border-left: 6px solid var(--ink); border-radius: var(--radius-sm); padding: 16px 18px; }
+.note.warn { border-left-color: #d6873a; }
+.faq details { background: var(--tile); border-radius: var(--radius-sm); padding: 16px 18px; }
+.faq details + details { margin-top: 10px; }
+.faq summary { cursor: pointer; font-weight: 600; }
+.faq details p { margin-top: 8px; color: var(--muted); }
+
+/* ---------- modal (demo checkout) ---------- */
+.modal-back { position: fixed; inset: 0; background: rgba(20,20,20,.5); display: none; align-items: flex-end; justify-content: center; z-index: 50; padding: 0; }
+.modal-back.open { display: flex; }
+@media (min-width: 640px) { .modal-back { align-items: center; padding: 24px; } }
+.modal { background: var(--ground); width: 100%; max-width: 480px; border-radius: 28px 28px 0 0; padding: 24px 20px 28px; max-height: 92vh; overflow-y: auto; }
+.modal { max-height: 92svh; padding-bottom: calc(28px + env(safe-area-inset-bottom, 0px)); overscroll-behavior: contain; }
+@media (min-width: 640px) { .modal { border-radius: 28px; padding: 28px; } }
+.modal-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.x { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: var(--tile); font-size: 20px; line-height: 1; }
+.field { display: grid; gap: 6px; margin-bottom: 14px; }
+.field label, .field .label { font-weight: 600; font-size: 14px; }
+.field input:not([type="radio"]) {
+  min-height: 48px; border-radius: 14px; border: 1px solid var(--line); background: var(--tile);
+  padding: 0 14px; font: inherit; color: var(--ink); width: 100%;
+}
+.field input:not([type="radio"]):focus { outline: 2px solid var(--ink); outline-offset: 1px; }
+.field .err { color: #b3261e; font-size: 13px; display: none; }
+.field.bad .err { display: block; }
+.field.bad input { border-color: #b3261e; }
+.opts { display: grid; gap: 8px; }
+.opt { display: flex; gap: 10px; align-items: center; background: var(--tile); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; cursor: pointer; }
+.opt input { accent-color: var(--ink); width: 18px; height: 18px; }
+.summary-box { background: var(--tile); border-radius: var(--radius-sm); padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.done-box { text-align: center; display: grid; gap: 12px; justify-items: center; }
+.done-box .tick { width: 64px; height: 64px; border-radius: 50%; background: var(--mint); display: grid; place-items: center; font-size: 30px; }
+
+/* ---------- footer ---------- */
+.site-foot { border-top: 1px solid var(--line); padding: 32px 0 40px; margin-top: 24px; }
+.site-foot { padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px)); }
+.site-foot .cols { display: grid; gap: 20px; }
+@media (min-width: 720px) { .site-foot .cols { grid-template-columns: 2fr 1fr 1fr; } }
+.site-foot a { text-decoration: none; color: var(--muted); display: block; padding: 3px 0; transition: color .2s, translate .25s var(--ease); }
+@media (hover: hover) { .site-foot .cols a:hover { color: var(--ink); translate: 3px 0; } }
+.site-foot .fine { font-size: 13px; color: var(--muted); margin-top: 20px; }
+
+/* =====================================================================
+   Motion. Everything that starts hidden is under .js, so the pages
+   still show in full if the script does not run.
+   ===================================================================== */
+
+/* ---------- smooth fade between pages (Chrome/Edge; others just load) ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+}
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: .28s; }
+
+/* ---------- hero: lines slide up, the rest rises in ---------- */
+.hero h1 .ln { display: block; overflow: hidden; padding-bottom: .12em; margin-bottom: -.12em; }
+.hero h1 .ln > span { display: inline-block; }
+.js .hero h1 .ln > span { animation: nx-line .9s var(--ease) both; animation-delay: calc(.08s + var(--i, 0) * .12s); }
+.js .hero .wrap > :not(h1) { animation: nx-rise .8s var(--ease) both; }
+.js .hero .wrap > :nth-child(1) { animation-delay: 0s; }
+.js .hero .wrap > :nth-child(3) { animation-delay: .3s; }
+.js .hero .wrap > :nth-child(4) { animation-delay: .4s; }
+.js .hero .wrap > :nth-child(5) { animation-delay: .5s; }
+
+/* ---------- scroll reveal (app.js adds data-reveal and .in) ---------- */
+.js [data-reveal] {
+  opacity: 0; translate: 0 26px;
+  transition: opacity .7s var(--ease) var(--d, 0ms), translate .7s var(--ease) var(--d, 0ms), scale .7s var(--ease) var(--d, 0ms),
+              transform .3s var(--ease), box-shadow .3s var(--ease);
+}
+.js [data-reveal="left"] { translate: -22px 0; }
+.js [data-reveal].in { opacity: 1; translate: none; scale: none; }
+
+/* step numbers pop in after their row */
+.js .steps > li[data-reveal]::before { scale: .3; transition: scale .55s var(--spring) calc(var(--d, 0ms) + .18s); }
+.js .steps > li[data-reveal].in::before { scale: 1; }
+
+/* ---------- tiles: lift on hover (mouse only) ---------- */
+.tile { transition: transform .3s var(--ease), box-shadow .3s var(--ease); }
+.product .icon { transition: transform .5s var(--spring); }
+@media (hover: hover) {
+  .tile.product:hover, .pack:hover, .tut:hover, .grid > .tile:not(.tut):hover { transform: translateY(-4px); box-shadow: 0 22px 44px -26px rgba(20,20,20,.4); }
+  .product:hover .icon { transform: rotate(-8deg) scale(1.08); }
+}
+
+/* ---------- click ripple ---------- */
+.chip, .opt, .x, .menu-btn { position: relative; overflow: hidden; -webkit-tap-highlight-color: transparent; }
+.rip-ink { position: absolute; border-radius: 50%; pointer-events: none; background: currentColor; opacity: .22; transform: scale(0); animation: nx-ripple .65s ease-out forwards; z-index: -1; }
+.chip .rip-ink, .opt .rip-ink, .x .rip-ink, .menu-btn .rip-ink { z-index: 0; }
+
+/* ---------- buttons with a busy / done state ---------- */
+.btn .st { display: inline-flex; align-items: center; gap: 8px; }
+.btn .st-busy, .btn .st-done { display: none; }
+.btn[data-state="busy"] .st-idle, .btn[data-state="done"] .st-idle { display: none; }
+.btn[data-state="busy"] .st-busy, .btn[data-state="done"] .st-done { display: inline-flex; animation: nx-swap .3s var(--ease) both; }
+.btn[data-state="busy"] { pointer-events: none; }
+.btn[data-state="done"] { background: var(--ok); color: #fff; }
+.btn::after { content: ""; position: absolute; inset: 0; z-index: -1; opacity: 0; pointer-events: none;
+  background: linear-gradient(100deg, transparent 20%, rgba(255,255,255,.28) 50%, transparent 80%); transform: translateX(-100%); }
+.btn[data-state="busy"]::after { opacity: 1; animation: nx-sheen 1.1s linear infinite; }
+.spin { width: 16px; height: 16px; border-radius: 50%; border: 2px solid rgba(255,255,255,.35); border-top-color: #fff; animation: nx-spin .7s linear infinite; flex: none; }
+.btn.light .spin { border-color: rgba(20,20,20,.2); border-top-color: var(--ink); }
+.tick-draw path { stroke-dasharray: 24; stroke-dashoffset: 24; animation: nx-draw .45s var(--ease) .1s forwards; }
+
+/* Download APK button */
+@media (hover: hover) { .dl-btn:hover .st-idle svg { animation: nx-bob .9s ease-in-out infinite; } }
+.dl-note { animation: nx-rise .4s var(--ease) both; }
+.dl-btn.android-only { opacity: 1; background: var(--tile); color: var(--muted); border: 1px dashed var(--muted); transition: none; }
+
+/* live version: dot pulses, pill pops when the version arrives */
+.status-dot.live { animation: nx-pulse 2.2s ease-out infinite; }
+.pill.pop { animation: nx-pop .5s var(--spring); }
+
+/* ---------- coins ---------- */
+.pack .flag { animation: nx-float 2.8s ease-in-out infinite; }
+.coin-fly { position: fixed; z-index: 60; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%;
+  background: var(--butter); border: 2px solid var(--ink); pointer-events: none;
+  animation: nx-coin .8s cubic-bezier(.2,.7,.3,1) forwards; }
+
+/* checkout: slides up on phones, pops in on wider screens; animates out on close */
+.modal-back.open { animation: nx-fade .25s ease both; }
+.modal-back.open .modal { animation: nx-sheet .45s var(--ease) both; }
+@media (min-width: 640px) { .modal-back.open .modal { animation-name: nx-pop-in; } }
+.modal-back.closing { animation: nx-fade-out .22s ease both; }
+.modal-back.closing .modal { animation: nx-sheet-out .22s ease-in both; }
+@media (min-width: 640px) { .modal-back.closing .modal { animation-name: nx-pop-out; } }
+.field.bad input { animation: nx-shake .4s; }
+.done-box:not([hidden]) { animation: nx-rise .45s var(--ease) both; }
+.done-box:not([hidden]) .tick { animation: nx-pop .6s var(--spring) .05s both, nx-ring 1.2s ease-out .3s; }
+
+/* ---------- tutorials and FAQ ---------- */
+.chip { transition: background-color .2s, color .2s, border-color .2s, transform .2s var(--ease); }
+.chip:active { transform: scale(.95); }
+.tut.pop { animation: nx-pop-in .45s var(--ease) both; }
+details[open] > :not(summary) { animation: nx-drop .35s var(--ease) both; }
+
+/* ---------- phones turned sideways and other short screens ---------- */
+@media (orientation: landscape) and (max-height: 520px) {
+  .demo-bar { padding-top: 4px; padding-bottom: 4px; font-size: 12px; }
+  .site-head .wrap { height: 56px; }
+  [id] { scroll-margin-top: 100px; }
+  section { padding: 28px 0; }
+  .hero { padding-top: 22px; }
+  .hero h1 { margin: 10px 0 12px; }
+  .hero .row { margin-top: 16px; }
+  .product { min-height: 0; }
+  .mobile-nav.open .inner { max-height: calc(100vh - 90px); max-height: calc(100svh - 90px); }
+}
+/* sideways phones get two columns instead of one long list */
+@media (orientation: landscape) and (min-width: 560px) and (max-width: 719.98px) {
+  .grid.two, .grid.three, .grid.four { grid-template-columns: 1fr 1fr; }
+  .tile { padding: 24px; }
+  .tut { padding: 0; }
+}
+
+/* =====================================================================
+   Phones (under 600 px wide): the same look, tighter and tidier.
+   Nothing wider than the screen, buttons in even rows, no oversized blocks.
+   ===================================================================== */
+.demo-bar .short { display: none; }
+.table-wrap td.num .unit { display: none; }
+@media (max-width: 599.98px) {
+  [id] { scroll-margin-top: 92px; }
+
+  /* draft bar: one short line */
+  .demo-bar { font-size: 12px; padding-top: 5px; padding-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .demo-bar .long { display: none; }
+  .demo-bar .short { display: inline; }
+
+  /* header */
+  .site-head .wrap { height: 56px; gap: 10px; }
+  .brand { font-size: 18px; gap: 8px; }
+  .mark, .mark svg { width: 32px; height: 32px; }
+  .mark { border-radius: 10px; }
+  .site-head .head-cta { min-height: 36px; padding: 0 14px; font-size: 13px; }
+  .menu-btn { width: 40px; height: 40px; }
+  .mobile-nav a { padding-top: 13px; padding-bottom: 13px; }
+
+  /* type and spacing */
+  section { padding: 28px 0; }
+  .hero { padding-top: 22px; }
+  .hero .pill { font-size: 12px; padding: 3px 10px; }
+  .hero h1 { margin: 10px 0; }
+  h1 { font-size: clamp(32px, 9.6vw, 40px); }
+  h2 { font-size: 26px; }
+  h3 { font-size: 19px; }
+  .lead { font-size: 16px; }
+  .eyebrow { font-size: 12px; }
+  .section-head { gap: 6px; margin-bottom: 16px; }
+
+  /* buttons: a row of buttons shares the width evenly, never ragged */
+  .btn { min-height: 46px; padding: 0 16px; font-size: 15px; }
+  .row:has(> .btn) { flex-wrap: nowrap; gap: 8px; }
+  .row:has(> .btn) > .btn { flex: 1 1 0; min-width: 0; padding: 0 10px; white-space: nowrap; }
+  .hero .row { margin-top: 18px; }
+
+  /* tiles */
+  .grid { gap: 10px; }
+  .tile { padding: 20px; gap: 10px; border-radius: 22px; }
+  .product { min-height: 0; }
+  .product .icon { width: 48px; height: 48px; border-radius: 15px; }
+  .product .icon svg { width: 24px; height: 24px; }
+  .product ul { gap: 6px; font-size: 15px; }
+  .product li::before { width: 6px; height: 6px; margin-top: 9px; }
+  .rate { font-size: 15px; }
+  .tile .big { font-size: 52px; }
+  .steps { gap: 8px; }
+  .steps > li { padding: 12px 14px 12px 54px; font-size: 15px; border-radius: 14px; }
+  .steps > li::before { width: 28px; height: 28px; left: 14px; top: 12px; font-size: 14px; }
+  .checks { gap: 10px; font-size: 15px; }
+  .checks > li { padding-left: 32px; }
+  .checks > li::before { width: 22px; height: 22px; font-size: 12px; }
+  .note, .faq details { padding: 14px 16px; }
+  .faq details + details { margin-top: 8px; }
+
+  /* coin packs: two by two instead of four full-screen cards */
+  .grid.four { grid-template-columns: 1fr 1fr; }
+  .pack { padding: 16px 14px 14px; gap: 6px; border-radius: 20px; }
+  .pack .flag { top: 12px; right: 12px; font-size: 11px; padding: 2px 8px; }
+  .pack .coins { font-size: 40px; }
+  .pack .muted { font-size: 13px; }
+  .pack p.small { font-size: 12.5px; line-height: 1.35; }
+  .pack .price { font-size: 20px; }
+  .pack .btn { min-height: 40px; padding: 0 8px; font-size: 14px; }
+
+  /* tutorials: filters on one line, slim "video coming" strip instead of a big empty box */
+  .chips { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; gap: 6px; margin-bottom: 14px; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip { flex: none; padding: 7px 12px; font-size: 13px; }
+  .tut { padding: 0; gap: 0; } /* the guide cards keep their full-width video strip */
+  .chip .more, .btn .more { display: none; } /* "Coins & account" → "Coins", "Download NEXX Farm" → "Download" */
+  .tut .video:not(:has(iframe)) { aspect-ratio: auto; height: 40px; }
+  .tut .video span { padding: 3px 10px; font-size: 12px; }
+  .tut .body { padding: 14px 18px 16px; gap: 6px; }
+  .tut h3 { font-size: 18px; }
+
+  /* downloads: version pill stays top-right, the two buttons stack full width */
+  [data-release] > .row:first-child { flex-wrap: nowrap; align-items: flex-start; }
+  [data-release] > .row:first-child .eyebrow { flex: 1; min-width: 0; }
+  [data-release] > .row:first-child .pill { flex: none; }
+  [data-release] .row:has(> .btn) { display: grid; grid-template-columns: 1fr; }
+  .dl-meta { font-size: 13px; }
+
+  /* footer: links in two columns */
+  .site-foot { padding-top: 24px; margin-top: 8px; }
+  .site-foot .cols { grid-template-columns: 1fr 1fr; gap: 16px; }
+  .site-foot .cols > :first-child { grid-column: 1 / -1; }
+  .site-foot .fine { font-size: 12px; margin-top: 16px; }
+
+  /* checkout sheet */
+  .modal { padding: 20px 16px 24px; padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); }
+  .modal-top { margin-bottom: 12px; }
+  .opt { padding: 10px 12px; }
+}
+/* coin rates on a phone (upright, or turned sideways): each row becomes a small card
+   instead of a squeezed table. Tablets and PCs keep the table. */
+@media (max-width: 599.98px), (orientation: landscape) and (max-height: 520px) and (max-width: 959.98px) {
+  .table-wrap { background: none; border-radius: 0; overflow: visible; }
+  .table-wrap table { min-width: 0; }
+  .table-wrap thead { display: none; }
+  .table-wrap tbody { display: grid; gap: 8px; }
+  .table-wrap tr { display: grid; grid-template-columns: 1fr auto; column-gap: 12px; align-items: center; background: var(--tile); border-radius: 16px; padding: 12px 16px; }
+  .table-wrap td { padding: 0; border: 0; }
+  .table-wrap td.app { grid-column: 1; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  .table-wrap td.mode { grid-column: 1; font-weight: 700; }
+  .table-wrap td.per { grid-column: 1; font-size: 13px; color: var(--muted); }
+  .table-wrap td.num { grid-column: 2; grid-row: 1 / span 3; text-align: right; font-size: 26px; line-height: 1; }
+  .table-wrap td.num .unit { display: block; margin-top: 3px; font-size: 11px; font-weight: 600; color: var(--muted); }
+}
+/* the smallest phones (320 px): button pairs stack, chips get a little narrower */
+@media (max-width: 359.98px) {
+  .row:has(> .btn) { flex-wrap: wrap; }
+  .row:has(> .btn) > .btn { flex: 1 1 100%; }
+  .chip { padding: 7px 9px; font-size: 12.5px; }
+}
+
+/* ---------- keyframes ---------- */
+@keyframes nx-line { from { translate: 0 105%; } }
+@keyframes nx-rise { from { opacity: 0; translate: 0 22px; } }
+@keyframes nx-slide-in { from { opacity: 0; translate: -14px 0; } }
+@keyframes nx-ripple { to { transform: scale(1); opacity: 0; } }
+@keyframes nx-swap { from { opacity: 0; translate: 0 8px; } }
+@keyframes nx-sheen { to { transform: translateX(100%); } }
+@keyframes nx-spin { to { transform: rotate(360deg); } }
+@keyframes nx-draw { to { stroke-dashoffset: 0; } }
+@keyframes nx-bob { 50% { translate: 0 3px; } }
+@keyframes nx-float { 50% { translate: 0 -4px; } }
+@keyframes nx-pulse { 0% { box-shadow: 0 0 0 0 rgba(31,157,85,.55); } 70%, 100% { box-shadow: 0 0 0 7px rgba(31,157,85,0); } }
+@keyframes nx-pop { 0% { scale: .6; } 60% { scale: 1.08; } 100% { scale: 1; } }
+@keyframes nx-ring { from { box-shadow: 0 0 0 0 rgba(31,157,85,.45); } to { box-shadow: 0 0 0 22px rgba(31,157,85,0); } }
+@keyframes nx-coin { 0% { transform: translate(0, 0) scale(.4); opacity: 1; } 70% { opacity: 1; } 100% { transform: translate(var(--x), var(--y)) scale(1) rotate(var(--r)); opacity: 0; } }
+@keyframes nx-fade { from { opacity: 0; } }
+@keyframes nx-fade-out { to { opacity: 0; } }
+@keyframes nx-sheet { from { translate: 0 100%; } }
+@keyframes nx-sheet-out { to { translate: 0 100%; } }
+@keyframes nx-pop-in { from { opacity: 0; scale: .94; translate: 0 14px; } }
+@keyframes nx-pop-out { to { opacity: 0; scale: .96; translate: 0 10px; } }
+@keyframes nx-shake { 20%, 60% { translate: -6px 0; } 40%, 80% { translate: 6px 0; } }
+@keyframes nx-drop { from { opacity: 0; translate: 0 -6px; } }
+
+/* ---------- "Reduce motion" on (phone setting, or Windows "Animation effects" off):
+   keep soft fades and the button busy/done feedback, drop sliding, bouncing and flying ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .js [data-reveal], .js [data-reveal="left"] { translate: none; scale: none; transition: opacity .6s ease var(--d, 0ms); }
+  .js .steps > li[data-reveal]::before { scale: 1; transition: none; }
+  .js .hero h1 .ln > span, .js .hero .wrap > :not(h1) { animation-name: nx-fade; animation-duration: .7s; }
+  .js .mobile-nav, .js .mobile-nav.open { transition: none; }
+  .js .mobile-nav.open a { animation-name: nx-fade; }
+  .modal-back.open .modal { animation-name: nx-fade; }
+  .modal-back.closing .modal { animation-name: nx-fade-out; }
+  .done-box:not([hidden]), .done-box:not([hidden]) .tick, .tut.pop, details[open] > :not(summary), .dl-note,
+  .btn[data-state="busy"] .st-busy, .btn[data-state="done"] .st-done { animation: nx-fade .4s ease both; }
+  .field.bad input, .pack .flag, .status-dot.live, .pill.pop, .dl-btn .st-idle svg, .btn[data-state="busy"]::after { animation: none; }
+  .tick-draw path { animation: none; stroke-dashoffset: 0; }
+  .tile.product:hover, .pack:hover, .tut:hover, .grid > .tile:hover, .btn:hover, .btn:active, .product:hover .icon, .chip:active { transform: none; }
+  .site-foot .cols a:hover { translate: none; }
+}
