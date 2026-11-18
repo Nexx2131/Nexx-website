@@ -266,6 +266,76 @@ td.num { font-weight: 800; font-size: 20px; }
 .done-box { text-align: center; display: grid; gap: 12px; justify-items: center; }
 .done-box .tick { width: 64px; height: 64px; border-radius: 50%; background: var(--mint); display: grid; place-items: center; font-size: 30px; }
 
+/* ---------- coin order form (Coins page) ---------- */
+.order-layout { display: grid; gap: 14px; align-items: start; }
+@media (min-width: 900px) {
+  .order-layout { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 24px; }
+}
+/* the steps stay in view beside the long form, only where they fit under the header (not on a phone turned sideways) */
+@media (min-width: 900px) and (min-height: 640px) {
+  .order-steps { position: sticky; top: 96px; }
+}
+.order-card { gap: 0; }
+html:not(.js) .order-form { display: none; }
+.order-form .field { margin-bottom: 18px; }
+.field .hint { color: var(--muted); font-size: 13px; }
+.center { text-align: center; }
+/* two or three choices side by side (New account / Add coins; Telegram / Instagram / Discord) */
+.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; background: var(--ground); border-radius: 16px; margin-bottom: 20px; }
+.seg.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.seg[data-apps] { margin-bottom: 8px; } /* the username box sits right under the app tabs */
+.seg label { position: relative; cursor: pointer; }
+.seg input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.seg label > span { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 6px 8px; border-radius: 12px;
+  font-weight: 600; font-size: 14px; line-height: 1.2; text-align: center; color: var(--muted); transition: background-color .2s, color .2s, box-shadow .2s; }
+.seg svg { width: 16px; height: 16px; fill: currentColor; flex: none; }
+.seg input:checked + span { background: var(--tile); color: var(--ink); box-shadow: 0 1px 2px rgba(20,20,20,.12), 0 6px 14px -8px rgba(20,20,20,.35); }
+.seg input:focus-visible + span { outline: 2px solid var(--ink); outline-offset: 1px; }
+@media (max-width: 420px) { .seg.three svg { display: none; } .seg label > span { font-size: 13px; padding: 6px 4px; } }
+.pw-wrap { position: relative; }
+.order-form .pw-wrap input { padding-right: 78px; }
+.pw-eye { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); min-height: 36px; padding: 0 12px; border: 0; border-radius: 10px;
+  background: var(--ground); font-size: 13px; font-weight: 600; }
+.lock-note { display: flex; gap: 10px; align-items: flex-start; background: var(--mint); border-radius: 14px; padding: 12px 14px; font-size: 14px; margin: -4px 0 18px; }
+.lock-note svg { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; margin-top: 1px; }
+/* how many coins: a slider with a coin for a thumb, and the number */
+.coin-pick { display: flex; gap: 12px; align-items: center; }
+.order-form .coin-pick input[type="range"] { flex: 1; min-width: 0; min-height: 44px; padding: 0; border: 0; border-radius: 0; background: transparent;
+  -webkit-appearance: none; appearance: none; accent-color: var(--ink); cursor: pointer; }
+.order-form .coin-pick input[type="range"]:focus { outline: none; }
+.coin-pick input[type="range"]::-webkit-slider-runnable-track { height: 8px; border-radius: 99px;
+  background: linear-gradient(var(--ink), var(--ink)) 0 0 / var(--p, 0%) 100% no-repeat, var(--line); }
+.coin-pick input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; margin-top: -10px; border-radius: 50%;
+  background: var(--butter); border: 3px solid var(--ink); box-shadow: 0 2px 6px rgba(20,20,20,.25); transition: transform .2s var(--spring); }
+.coin-pick input[type="range"]:active::-webkit-slider-thumb { transform: scale(1.15); }
+.coin-pick input[type="range"]:focus-visible::-webkit-slider-thumb { outline: 2px solid var(--ink); outline-offset: 3px; }
+.coin-pick input[type="range"]::-moz-range-track { height: 8px; border-radius: 99px; background: var(--line); }
+.coin-pick input[type="range"]::-moz-range-progress { height: 8px; border-radius: 99px; background: var(--ink); }
+.coin-pick input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: var(--butter); border: 3px solid var(--ink); }
+.order-form .coin-pick input[type="number"] { width: 112px; flex: none; font-size: 20px; font-weight: 700; text-align: center; padding: 0 8px; }
+/* the five quick picks share the row, so all fit even on a 320 px phone (no sideways scroll) */
+.chips.quick { margin: 2px 0 0; flex-wrap: nowrap; overflow: visible; }
+.chips.quick .chip { flex: 1 1 0; min-width: 0; min-height: 40px; padding: 6px 4px; text-align: center; }
+.pay-opts { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 459.98px) { .pay-opts { grid-template-columns: 1fr; } } /* three across only where "El Dorado" fits */
+.pay-opts .opt { font-weight: 600; min-height: 48px; }
+.opt:has(input:checked) { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.at-wrap { position: relative; }
+.at-wrap > span { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); font-weight: 600; pointer-events: none; }
+.order-form .at-wrap input { padding-left: 32px; }
+.form-err { background: #FDECEA; color: #8c1d18; border-radius: 14px; padding: 12px 14px; font-size: 14px; margin-bottom: 14px; }
+.order-form .btn.block + .small { margin-top: 10px; }
+.order-done { padding: 8px 0; }
+.order-done h3:focus { outline: none; }
+.dm-box { display: flex; gap: 10px; align-items: center; width: 100%; background: var(--ground); border-radius: 14px; padding: 10px 10px 10px 16px; text-align: left; }
+.dm-box > span { flex: 1; min-width: 0; font-weight: 600; overflow-wrap: anywhere; }
+.dm-box .btn { flex: none; }
+.dm-btns { justify-content: center; }
+/* phones: one DM button above the other, full width (a grid, so the phone button-row rules do not apply) */
+@media (max-width: 599.98px) { body .row.dm-btns { display: grid; justify-content: stretch; justify-self: stretch; } }
+@media (max-width: 374.98px) { .seg .more { display: none; } } /* "New NEXX account" → "New account", "Add coins to my ID" → "Add coins" */
+.dm-btns .btn svg { width: 18px; height: 18px; fill: currentColor; }
+
 /* ---------- footer ---------- */
 .site-foot { border-top: 1px solid var(--line); padding: 32px 0 40px; margin-top: 24px; }
 .site-foot { padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px)); }

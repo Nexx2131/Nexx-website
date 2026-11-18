@@ -23,14 +23,96 @@
     </div>
   </section>
 
-  <section style="padding-top:0">
+  <section style="padding-top:0" id="buy">
     <div class="wrap">
       <div class="section-head">
-        <span class="eyebrow">Coin packs</span>
-        <h2>Pick a pack</h2>
-        <p class="note warn small"><b>Sample prices.</b> These prices and the checkout are placeholders for the draft. Buying here takes no money and adds no coins.</p>
+        <span class="eyebrow">Buy coins</span>
+        <h2>Order coins</h2>
       </div>
-      <div class="grid four" data-packages></div>
+      <div class="order-layout">
+        <ol class="steps order-steps">
+          <li><b>Fill in the form</b>A new NEXX account with the ID and password you choose, or coins for the ID you already have.</li>
+          <li><b>DM us your order number</b>Message <b style="display:inline">@cocnexx</b> on Telegram or Instagram, from the username you put in the form.</li>
+          <li><b>Pay, then play</b>We sort out the payment with you in the chat, then add the coins. Log in to any NEXX app with your ID and password.</li>
+        </ol>
+
+        <div class="tile order-card" data-order>
+          <noscript><p>The order form needs JavaScript. DM <b>@cocnexx</b> on Telegram or Instagram to buy coins.</p></noscript>
+          <!-- No input here has a name, so nothing (above all the password) can ever end up in a link. -->
+          <form class="order-form" novalidate>
+            <div class="seg" role="radiogroup" aria-label="What are the coins for?">
+              <label><input type="radio" name="o-kind" value="new" checked aria-label="New NEXX account"><span>New<span class="more"> NEXX</span> account</span></label>
+              <label><input type="radio" name="o-kind" value="topup" aria-label="Add coins to my ID"><span>Add coins<span class="more"> to my ID</span></span></label>
+            </div>
+
+            <div class="field" data-f="account">
+              <label for="o-id" data-new-only>Choose your NEXX ID</label>
+              <label for="o-id" data-topup-only hidden>Your NEXX ID</label>
+              <input id="o-id" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" maxlength="20" placeholder="e.g. clash_king07">
+              <span class="hint" data-new-only>3–20 letters, digits, _ . or -. You log in with it.</span>
+              <span class="hint" data-topup-only hidden>The ID you log in to NEXX apps with.</span>
+              <span class="err"></span>
+            </div>
+
+            <div data-new-only>
+              <div class="field" data-f="password">
+                <label for="o-pw">Choose a password</label>
+                <div class="pw-wrap">
+                  <input id="o-pw" type="password" autocomplete="new-password" maxlength="72" placeholder="at least 8 characters">
+                  <button class="pw-eye" type="button" data-eye aria-label="Show the password" aria-pressed="false">Show</button>
+                </div>
+                <span class="err"></span>
+              </div>
+              <div class="field" data-f="password2">
+                <label for="o-pw2">Type it again</label>
+                <input id="o-pw2" type="password" autocomplete="new-password" maxlength="72">
+                <span class="err"></span>
+              </div>
+              <p class="lock-note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 11V8a5 5 0 0 1 10 0v3"/><rect x="4.5" y="11" width="15" height="10" rx="2.5"/></svg>
+                <span>Your password goes straight to the NEXX server and is locked there: nobody sees it, not even us. Never send it in a DM.</span></p>
+            </div>
+
+            <div class="field" data-f="coins">
+              <span class="label" id="o-coins-label">How many coins</span>
+              <div class="coin-pick">
+                <input id="o-range" type="range" min="1" max="500" step="1" aria-labelledby="o-coins-label">
+                <input id="o-coins" type="number" min="1" inputmode="numeric" aria-labelledby="o-coins-label">
+              </div>
+              <div class="chips quick" data-quick></div>
+              <span class="hint" data-last></span>
+              <span class="err"></span>
+            </div>
+
+            <div class="field" data-f="pay">
+              <span class="label" id="o-pay-label">How you will pay</span>
+              <div class="opts pay-opts" role="radiogroup" aria-labelledby="o-pay-label" data-pay></div>
+              <span class="err"></span>
+            </div>
+
+            <div class="field" data-f="contact">
+              <span class="label" id="o-app-label">Where we can reach you</span>
+              <div class="seg three" role="radiogroup" aria-labelledby="o-app-label" data-apps></div>
+              <div class="at-wrap"><span aria-hidden="true">@</span><input id="o-contact" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" maxlength="33" aria-label="Your username"></div>
+              <span class="hint" data-app-hint></span>
+              <span class="err"></span>
+            </div>
+
+            <p class="form-err" role="alert" hidden></p>
+            <button class="btn block" type="submit" data-submit><span class="st st-idle">Place order</span><span class="st st-busy"><span class="spin"></span>Placing order…</span></button>
+            <p class="small muted center">Nothing is charged on this page. You pay after we talk in the DM. Up to 2 orders a day.</p>
+          </form>
+
+          <div class="order-done done-box" hidden aria-live="polite">
+            <div class="tick">✓</div>
+            <h3 tabindex="-1">Order <span data-o-num></span> is in</h3>
+            <p class="muted">Now DM <b data-o-handle></b> from <b data-o-from></b> and send this:</p>
+            <div class="dm-box"><span data-o-msg></span><button class="btn small light" type="button" data-copy><span class="st st-idle">Copy</span><span class="st st-done">Copied</span></button></div>
+            <div class="row dm-btns" data-dm-btns></div>
+            <p class="small muted" data-o-after></p>
+            <button class="btn light" type="button" data-again>Place another order</button>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -64,36 +146,6 @@
     </div>
   </section>
 </main>
-
-<!-- Demo checkout: nothing here is sent anywhere -->
-<div class="modal-back" id="checkout" role="dialog" aria-modal="true" aria-labelledby="co-title">
-  <div class="modal">
-    <div class="modal-top">
-      <h3 id="co-title">Buy coins</h3>
-      <button class="x" type="button" data-close aria-label="Close">×</button>
-    </div>
-    <form novalidate>
-      <div class="summary-box"><b data-sum-coins></b><span data-sum-price></span></div>
-      <div class="field">
-        <label for="acct">Your NEXX account ID</label>
-        <input id="acct" autocomplete="off" placeholder="the ID you log in with" maxlength="20">
-        <span class="err">Enter the 3–20 character ID you log in with.</span>
-      </div>
-      <div class="field">
-        <span class="label">Pay with</span>
-        <div class="opts" data-pay></div>
-      </div>
-      <p class="small muted" style="margin-bottom:14px">Demo checkout: no payment is taken and nothing is sent.</p>
-      <button class="btn block" type="submit" data-submit><span class="st st-idle">Place order (demo)</span><span class="st st-busy"><span class="spin"></span>Placing order…</span></button>
-    </form>
-    <div class="done-box" hidden>
-      <div class="tick">✓</div>
-      <h3>Demo order placed</h3>
-      <p class="muted" data-done-text></p>
-      <button class="btn" type="button" data-close>Close</button>
-    </div>
-  </div>
-</div>
 
 <footer id="site-foot"></footer>
 <script src="assets/data.js"></script>

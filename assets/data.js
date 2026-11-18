@@ -16,7 +16,12 @@ window.NEXX = {
       name: "NEXX Farm",
       updateJson: "https://xarwmwksfakwuhrwexxh.supabase.co/storage/v1/object/public/nexx-releases/farm/update.json",
       apkBase: "https://xarwmwksfakwuhrwexxh.supabase.co/storage/v1/object/public/nexx-releases/farm/",
-      fallbackApk: null // no fixed "latest" link for Farm yet; the page says so if the live read fails
+      fallbackApk: null, // no fixed "latest" link for Farm yet; the page says so if the live read fails
+      // A download page on a free file host (MediaFire, Google Drive, ...), starting with https://. When set, the
+      // Download button opens that page in a new tab instead of taking the 17.7 MB APK from the NEXX server, so new
+      // players' downloads use none of the server's data. Each new Farm version: upload it there too and paste its new
+      // link here. Leave "" to download from the NEXX server as before.
+      downloadPage: ""
     }
   },
 
@@ -32,22 +37,24 @@ window.NEXX = {
     { app: "NEXX Farm", mode: "Farming + donating + walls", coins: 9, per: "24 h on one phone" }
   ],
 
-  // SAMPLE coin packages. Prices are placeholders until the owner sets real ones.
-  currency: "$",
-  pricesAreSamples: true,
-  packages: [
-    { id: "p10",  coins: 10,  price: 5,  label: "Starter",  note: "10 days of NEXX Bot on one device" },
-    { id: "p30",  coins: 30,  price: 12, label: "Month",    note: "A month of NEXX Bot, or 15 days of Farm", popular: true },
-    { id: "p100", coins: 100, price: 35, label: "Pro",      note: "One day of Name change, or 25 days of Farm + donating" },
-    { id: "p300", coins: 300, price: 90, label: "Reseller", note: "For running many devices" }
-  ],
-
-  // Payment choices shown in the (demo) checkout. Nothing is charged yet.
-  payMethods: [
-    { id: "card", label: "Card" },
-    { id: "bank", label: "Bank transfer" },
-    { id: "chat", label: "Pay the seller in chat" }
-  ],
+  // Coin orders (the form on the Coins page). An order goes to the NEXX server (function nexx_orders,
+  // F:\NEXX Admin\server\015_website_orders.sql); you approve or reject it in NEXX Admin → Orders.
+  orders: {
+    server: "https://xarwmwksfakwuhrwexxh.supabase.co",
+    // The server's PUBLIC (publishable) key, the same one every NEXX app carries. It can only call the
+    // server's public functions, which check everything themselves. Kept out of plain text as in the
+    // apps (it is the key written backwards, in base64). NEVER put a secret or service_role key here.
+    key: "T1VpdlN1UVVfZzdGdEZQa0hnN0NDWlZ3cTdGMXhtdl9lbGJhaHNpbGJ1cF9icw==",
+    // The same words as the server's list (nexx.order_settings.pay_methods), or the order is refused.
+    payMethods: ["Binance", "El Dorado", "UPI"],
+    maxCoins: 10000,                  // as nexx.order_settings.max_coins
+    quick: [10, 30, 100, 300, 1000],  // the quick-pick buttons under the slider
+    start: 30,                        // coins picked when the page opens
+    waitDays: 3,                      // as nexx.order_settings.wait_days
+    // Where buyers DM their order number. An app with an empty link is left out of the form's "Where we can reach
+    // you" and gets no DM button: put the Discord invite here and Discord appears by itself.
+    dm: { handle: "@cocnexx", telegram: "https://t.me/cocnexx", instagram: "https://ig.me/m/cocnexx", discord: "" }
+  },
 
   support: {
     label: "Contact the seller",

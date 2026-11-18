@@ -1,4 +1,4 @@
-// NEXX website: shared header/footer, coin tables, demo checkout, live downloads, motion.
+// NEXX website: shared header/footer, coin tables, the coin order form, live downloads, motion.
 (function () {
   "use strict";
   var D = window.NEXX;
@@ -64,7 +64,7 @@
   }
   function header() {
     return '' +
-      '<div class="demo-bar"><b>Rough draft</b> · <span class="long">early preview, buying is a demo and takes no money</span><span class="short">demo only, no money taken</span></div>' +
+      '<div class="demo-bar"><b>Early preview</b> · <span class="long">coin orders are confirmed by hand: DM @cocnexx after you order</span><span class="short">orders confirmed by DM</span></div>' +
       '<div class="wrap">' +
         '<a class="brand" href="index.html"><span class="mark">' + ICON.mark + '</span>NEXX</a>' +
         '<nav class="nav" aria-label="Main">' + navLinks(false) + '</nav>' +
@@ -147,24 +147,7 @@
       }).join("") + "</tbody></table></div>";
   });
 
-  // ---------- coin packages ----------
-  function money(n) { return D.currency + n; }
-  $all("[data-packages]").forEach(function (el) {
-    el.innerHTML = D.packages.map(function (p) {
-      return '<div class="tile pack' + (p.popular ? " popular" : "") + '">' +
-        (p.popular ? '<span class="pill ink flag">Popular</span>' : "") +
-        '<span class="eyebrow">' + esc(p.label) + "</span>" +
-        '<div class="coins">' + p.coins + '</div><div class="muted">NEXX coins</div>' +
-        '<p class="small muted">' + esc(p.note) + "</p>" +
-        '<div class="spacer"></div>' +
-        '<div><div class="price">' + money(p.price) + "</div>" +
-        (D.pricesAreSamples ? '<div class="sample">sample price</div>' : "") + "</div>" +
-        '<button class="btn block" type="button" data-buy="' + esc(p.id) + '">Buy ' + p.coins + " coins</button>" +
-      "</div>";
-    }).join("");
-  });
-
-  // ---------- coin burst from a Buy button ----------
+  // ---------- coin burst (a placed order) ----------
   function burst(el) {
     if (reduce) return;
     var r = el.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
@@ -181,68 +164,228 @@
     }
   }
 
-  // ---------- demo checkout ----------
-  var modal = $("#checkout");
-  if (modal) {
-    var form = $("form", modal), done = $(".done-box", modal), current = null, opener = null;
-    var submitBtn = $("[data-submit]", form);
-    var payWrap = $("[data-pay]", modal);
-    payWrap.innerHTML = D.payMethods.map(function (m, i) {
-      return '<label class="opt"><input type="radio" name="pay" value="' + esc(m.id) + '"' + (i === 0 ? " checked" : "") + "> " + esc(m.label) + "</label>";
+  // ---------- coin order form (Coins page) ----------
+  // The order goes to the NEXX server's public function nexx_orders (F:\NEXX Admin\server\015_website_orders.sql).
+  // The server checks everything again and keeps the password only as a bcrypt hash; the owner approves the
+  // order in NEXX Admin → Orders after the buyer's DM. The password is never put in a link, stored or shown.
+  // 016_order_limits.sql: at most 2 orders in any 24 h per internet address and per contact name. The server's refusal
+  // ("You can place up to 2 orders a day. You can order again in 5 h 12 min, or DM us.") shows above the button.
+  var orderBox = $("[data-order]");
+  if (orderBox && D.orders) {
+    var O = D.orders;
+    var oForm = $(".order-form", orderBox), oDone = $(".order-done", orderBox), oBtn = $("[data-submit]", oForm);
+    var oErr = $(".form-err", oForm);
+    var idIn = $("#o-id"), pw = $("#o-pw"), pw2 = $("#o-pw2"), range = $("#o-range"), num = $("#o-coins"), who = $("#o-contact");
+    // the buyer's own username, checked as the server checks it (stored without the @)
+    var APPS = [
+      { id: "telegram", label: "Telegram", re: /^[A-Za-z0-9_]{5,32}$/, hint: "Your Telegram username (Settings → Username).",
+        bad: "A Telegram username is 5–32 letters, digits or _." },
+      { id: "instagram", label: "Instagram", re: /^[A-Za-z0-9._]{1,30}$/, hint: "Your Instagram username.",
+        bad: "An Instagram username is up to 30 letters, digits, . or _." },
+      { id: "discord", label: "Discord", re: /^[A-Za-z0-9_.]{2,32}$/, hint: "Your Discord username (not the display name).",
+        bad: "A Discord username is 2–32 letters, digits, . or _." }
+    ].filter(function (a) { return O.dm[a.id]; }); // only apps NEXX can be messaged on (Discord shows once data.js has its link)
+    var kind = function () { return $('input[name="o-kind"]:checked', oForm).value; };
+    var app = function () {
+      var r = $('input[name="o-app"]:checked', oForm);
+      return APPS.filter(function (a) { return r && a.id === r.value; })[0] || APPS[0];
+    };
+    var bytes = function (s) { return window.TextEncoder ? new TextEncoder().encode(s).length : unescape(encodeURIComponent(s)).length; };
+    var plural = function (n, one, many) { return n.toLocaleString("en-US") + " " + (n === 1 ? one : many); };
+
+    $("[data-pay]", oForm).innerHTML = O.payMethods.map(function (m) {
+      return '<label class="opt"><input type="radio" name="o-pay" value="' + esc(m) + '"> ' + esc(m) + "</label>";
     }).join("");
+    $("[data-apps]", oForm).classList.toggle("three", APPS.length > 2);
+    $("[data-apps]", oForm).innerHTML = APPS.map(function (a, i) {
+      return '<label><input type="radio" name="o-app" value="' + a.id + '"' + (i === 0 ? " checked" : "") + "><span>" +
+        (ICON[a.id] || "") + a.label + "</span></label>";
+    }).join("");
+    $("[data-quick]", oForm).innerHTML = O.quick.map(function (n) {
+      return '<button class="chip" type="button" data-n="' + n + '">' + n.toLocaleString("en-US") + "</button>";
+    }).join("");
+    num.max = O.maxCoins;
 
-    var openFor = function (id) {
-      current = D.packages.filter(function (p) { return p.id === id; })[0];
-      if (!current) return;
-      $("[data-sum-coins]", modal).textContent = current.coins + " NEXX coins";
-      $("[data-sum-price]", modal).textContent = money(current.price) + (D.pricesAreSamples ? " (sample)" : "");
-      form.hidden = false; done.hidden = true;
-      if (submitBtn) submitBtn.removeAttribute("data-state");
-      $(".field", form).classList.remove("bad");
-      modal.classList.remove("closing");
-      modal.classList.add("open");
-      document.body.style.overflow = "hidden";
-      setTimeout(function () { $("#acct", form).focus({ preventScroll: true }); }, reduce ? 0 : 350);
+    // How many coins: the slider, the number and the quick buttons move together.
+    var lastLine = $("[data-last]", oForm);
+    var setCoins = function (n, from) {
+      n = Math.max(1, Math.min(O.maxCoins, Math.round(n) || 1));
+      if (from !== num) num.value = n;
+      if (from !== range) range.value = Math.min(n, +range.max);
+      range.style.setProperty("--p", ((Math.min(n, +range.max) - 1) / (+range.max - 1) * 100).toFixed(1) + "%");
+      $all("[data-n]", oForm).forEach(function (c) { c.classList.toggle("on", +c.getAttribute("data-n") === n); });
+      lastLine.textContent = "About " + plural(n, "day", "days") + " of NEXX Bot on one device" +
+        (n >= 2 ? ", or " + plural(Math.floor(n / 2), "day", "days") + " of NEXX Farm." : ".");
     };
-    var close = function () {
-      if (!modal.classList.contains("open") || modal.classList.contains("closing")) return;
-      var finish = function () {
-        modal.classList.remove("open", "closing");
-        document.body.style.overflow = "";
-        if (opener && document.contains(opener)) opener.focus({ preventScroll: true });
-      };
-      modal.classList.add("closing");
-      setTimeout(finish, 220);
-    };
-
-    document.addEventListener("click", function (e) {
-      var b = e.target.closest("[data-buy]");
-      if (!b) return;
-      opener = b;
-      burst(b);
-      var id = b.getAttribute("data-buy");
-      if (reduce) openFor(id); else setTimeout(function () { openFor(id); }, 260);
+    range.addEventListener("input", function () { setCoins(+range.value, range); });
+    num.addEventListener("input", function () { if (num.value !== "") setCoins(+num.value, num); });
+    num.addEventListener("blur", function () { setCoins(+num.value || 1); });
+    $("[data-quick]", oForm).addEventListener("click", function (e) {
+      var c = e.target.closest("[data-n]");
+      if (c) { setCoins(+c.getAttribute("data-n")); ok(fieldOf("coins")); }
     });
-    $all("[data-close]", modal).forEach(function (b) { b.addEventListener("click", close); });
-    modal.addEventListener("click", function (e) { if (e.target === modal) close(); });
-    document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
 
-    form.addEventListener("submit", function (e) {
+    var fieldOf = function (k) { return $('[data-f="' + k + '"]', oForm); };
+    var ok = function (f) {
+      if (!f) return;
+      f.classList.remove("bad");
+      $all("[aria-invalid]", f).forEach(function (i) { i.removeAttribute("aria-invalid"); i.removeAttribute("aria-describedby"); });
+    };
+    var clearErrs = function () {
+      $all(".field.bad", oForm).forEach(ok);
+      oErr.hidden = true;
+    };
+    // A problem: under its field (and that field focused, so a screen reader reads it), or above the button.
+    var bad = function (k, msg) {
+      var f = k && fieldOf(k);
+      if (!f) { oErr.textContent = msg; oErr.hidden = false; replay(oErr, "pop"); return; }
+      var e = $(".err", f);
+      e.textContent = msg;
+      e.id = e.id || "o-err-" + k;
+      replay(f, "bad");
+      var inp = $('input:not([type="radio"])', f) || $("input", f);
+      if (inp) {
+        inp.setAttribute("aria-invalid", "true");
+        inp.setAttribute("aria-describedby", e.id);
+        inp.focus({ preventScroll: true });
+      }
+      f.scrollIntoView({ block: "center", behavior: reduce ? "auto" : "smooth" });
+    };
+
+    var showKind = function () {
+      var isNew = kind() === "new";
+      $all("[data-new-only]", oForm).forEach(function (el) { el.hidden = !isNew; });
+      $all("[data-topup-only]", oForm).forEach(function (el) { el.hidden = isNew; });
+      if (!isNew) { pw.value = ""; pw2.value = ""; }
+      clearErrs();
+    };
+    var showApp = function () {
+      var a = app();
+      $("[data-app-hint]", oForm).textContent = a.hint;
+      who.setAttribute("aria-label", "Your " + a.label + " username");
+      who.placeholder = "your " + a.label + " username";
+      ok(fieldOf("contact"));
+    };
+    oForm.addEventListener("change", function (e) {
+      if (e.target.name === "o-kind") showKind();
+      else if (e.target.name === "o-app") showApp();
+      else if (e.target.name === "o-pay") ok(fieldOf("pay"));
+    });
+    oForm.addEventListener("input", function (e) {
+      // the box already shows an @, so a typed or pasted one is dropped
+      if (e.target === who && /^\s*@/.test(who.value)) who.value = who.value.replace(/^\s*@+/, "");
+      ok(e.target.closest(".field"));
+    });
+    $("[data-eye]", oForm).addEventListener("click", function () {
+      var show = pw.type === "password";
+      pw.type = pw2.type = show ? "text" : "password";
+      this.textContent = show ? "Hide" : "Show";
+      this.setAttribute("aria-pressed", show ? "true" : "false");
+      this.setAttribute("aria-label", show ? "Hide the password" : "Show the password");
+    });
+
+    // The server's public key (base64, written backwards in data.js, as the apps keep it out of plain text).
+    var serverKey = function () { try { return atob(O.key).split("").reverse().join(""); } catch (err) { return ""; } };
+    // Answers {order:…} or {error, field?}: also when the server cannot be reached, so the form always says why.
+    var placeOrder = function (p) {
+      var ctl = window.AbortController ? new AbortController() : null;
+      var timer = ctl ? setTimeout(function () { ctl.abort(); }, 20000) : 0;
+      return fetch(O.server.replace(/\/+$/, "") + "/rest/v1/rpc/nexx_orders", {
+        method: "POST", cache: "no-store", credentials: "omit", referrerPolicy: "no-referrer",
+        headers: { "apikey": serverKey(), "Content-Type": "application/json" },
+        body: JSON.stringify({ p: p }), signal: ctl ? ctl.signal : undefined
+      }).then(function (res) {
+        clearTimeout(timer);
+        // no such function: the server's orders part (015) is not set up yet
+        if (res.status === 404) return { error: "Ordering on the website is not open yet. DM " + O.dm.handle + " on Telegram or Instagram to buy coins." };
+        if (!res.ok) return { error: "The NEXX server is busy right now (" + res.status + "). Try again in a minute." };
+        return res.json().then(function (j) {
+          return j && typeof j === "object" && (j.order || j.error) ? j : { error: "The NEXX server gave an answer we don't understand. Try again." };
+        });
+      }).catch(function () {
+        clearTimeout(timer);
+        return { error: "Can't reach the NEXX server. Check your internet and try again." };
+      });
+    };
+
+    oForm.addEventListener("submit", function (e) {
       e.preventDefault();
-      if (submitBtn && submitBtn.getAttribute("data-state") === "busy") return;
-      var input = $("#acct", form), field = input.closest(".field");
-      var id = input.value.trim();
-      // NEXX account IDs are 3-20 characters.
-      if (id.length < 3 || id.length > 20) { replay(field, "bad"); input.focus(); return; }
-      field.classList.remove("bad");
-      if (submitBtn) submitBtn.setAttribute("data-state", "busy");
-      setTimeout(function () {
-        // Demo only: nothing is sent anywhere.
-        $("[data-done-text]", modal).innerHTML = "In the finished site, <b>" + current.coins + " coins</b> would be added to the NEXX account <b>" + esc(id) + "</b> after payment. No payment was taken and nothing was sent.";
-        form.hidden = true; done.hidden = false;
-        if (submitBtn) submitBtn.removeAttribute("data-state");
-      }, 700);
+      if (oBtn.getAttribute("data-state") === "busy") return;
+      clearErrs();
+      var k = kind(), id = idIn.value.trim().toLowerCase(), a = app(), handle = who.value.trim().replace(/^@+/, "");
+      var n = Number(String(num.value).replace(/[,\s]/g, ""));
+      var payEl = $('input[name="o-pay"]:checked', oForm);
+      if (!/^[a-z0-9_.-]{3,20}$/.test(id)) return bad("account", id ? "3–20 characters: letters, digits, _ . or - (no spaces)." : "Type " + (k === "new" ? "the ID you want." : "your NEXX ID."));
+      if (k === "new") {
+        if (bytes(pw.value) < 8) return bad("password", "At least 8 characters.");
+        if (bytes(pw.value) > 72) return bad("password", "At most 72 characters.");
+        if (pw2.value !== pw.value) return bad("password2", "The two passwords are not the same.");
+      }
+      if (!(n >= 1 && n <= O.maxCoins && Math.floor(n) === n)) return bad("coins", "A whole number from 1 to " + O.maxCoins.toLocaleString("en-US") + ".");
+      if (!payEl) return bad("pay", "Choose how you will pay.");
+      if (!a.re.test(handle)) return bad("contact", handle ? a.bad : "Type your " + a.label + " username, so we know the DM is yours.");
+
+      var body = { op: "place", kind: k, account: id, coins: n, pay: payEl.value, contactApp: a.id, contact: handle };
+      if (k === "new") body.password = pw.value;
+      oBtn.setAttribute("data-state", "busy");
+      placeOrder(body).then(function (r) {
+        oBtn.removeAttribute("data-state");
+        if (r.order) showDone(r, a, handle, payEl.value);
+        else bad(r.field, r.error || "Not placed. Try again.");
+      });
     });
+
+    var showDone = function (r, a, handle, pay) {
+      var isNew = r.kind === "new";
+      var msg = "Hi! NEXX order #" + r.order + ": " + plural(r.coins, "coin", "coins") +
+        (isNew ? " for my new account " : " for my ID ") + r.account + ", paying with " + pay + ".";
+      $("[data-o-num]", oDone).textContent = "#" + r.order;
+      $("[data-o-handle]", oDone).textContent = O.dm.handle;
+      $("[data-o-from]", oDone).textContent = a.label + " @" + handle;
+      $("[data-o-msg]", oDone).textContent = msg;
+      $("[data-o-after]", oDone).textContent = "We check that the DM comes from " + a.label + " @" + handle +
+        ", sort out the payment with you, then add the coins" + (isNew ? " and open your account" : "") +
+        ". An order we have not confirmed in " + plural(O.waitDays, "day", "days") + " expires.";
+      // a DM button for each of the owner's apps; the buyer's own app first and dark
+      var dms = APPS.filter(function (x) { return O.dm[x.id]; });
+      dms.sort(function (x, y) { return (y.id === a.id) - (x.id === a.id); });
+      $("[data-dm-btns]", oDone).innerHTML = dms.map(function (x, i) {
+        return '<a class="btn' + (i === 0 ? "" : " light") + '" href="' + esc(O.dm[x.id]) + '" target="_blank" rel="noopener">' +
+          (ICON[x.id] || "") + "DM on " + x.label + "</a>";
+      }).join("");
+      pw.value = ""; pw2.value = "";            // the password is on the server now, and nowhere here
+      burst(oBtn);
+      oForm.hidden = true; oDone.hidden = false;
+      var h = $("h3", oDone);
+      h.focus({ preventScroll: true });
+      orderBox.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
+    };
+
+    var copyBtn = $("[data-copy]", oDone);
+    copyBtn.addEventListener("click", function () {
+      var text = $("[data-o-msg]", oDone).textContent;
+      var ok = function () {
+        copyBtn.setAttribute("data-state", "done");
+        clearTimeout(copyBtn._t); copyBtn._t = setTimeout(function () { copyBtn.removeAttribute("data-state"); }, 1800);
+      };
+      var fallback = function () {
+        var sel = window.getSelection(), rg = document.createRange();
+        rg.selectNodeContents($("[data-o-msg]", oDone)); sel.removeAllRanges(); sel.addRange(rg);
+        try { if (document.execCommand("copy")) ok(); } catch (err) { /* the text stays selected to copy by hand */ }
+      };
+      if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(ok, fallback);
+      else fallback();
+    });
+    $("[data-again]", oDone).addEventListener("click", function () {
+      oDone.hidden = true; oForm.hidden = false;
+      idIn.value = ""; pw.value = ""; pw2.value = "";
+      clearErrs();
+      idIn.focus();
+    });
+
+    setCoins(O.start || 30);
+    showKind();
+    showApp();
   }
 
   // ---------- downloads: read each app's public update file ----------
@@ -262,28 +405,47 @@
     }
   }
 
+  function hostOf(url) { try { return new URL(url).hostname.replace(/^www\./, ""); } catch (err) { return ""; } }
+
+  // A download page on a file host (data.js → releases.<app>.downloadPage): the button opens it in a new tab and says so.
+  function pageButton(btn, page) {
+    btn.href = page;
+    btn.target = "_blank";
+    btn.removeAttribute("aria-disabled");
+    btn.setAttribute("data-page", "");
+    btn.setAttribute("aria-label", "Download APK from " + hostOf(page) + " (opens in a new tab)");
+    var busy = $(".st-busy", btn), done = $(".st-done", btn);
+    if (busy && busy.lastChild) busy.lastChild.textContent = "Opening download page…";
+    if (done && done.lastChild) done.lastChild.textContent = "Opened in a new tab";
+  }
+
   $all("[data-release]").forEach(function (card) {
     var key = card.getAttribute("data-release"), rel = D.releases[key];
     var btn = $("[data-dl]", card), ver = $("[data-ver]", card), meta = $("[data-meta]", card), dot = $(".status-dot", card);
     var note = $("[data-dl-note]", card), pill = dot ? dot.parentNode : null;
+    var page = /^https:\/\/[^\s"<>]+$/.test(rel.downloadPage || "") ? rel.downloadPage : "";
+    var from = page ? "<dt>From</dt><dd>" + esc(hostOf(page)) + "</dd>" : "";
     if (IOS) androidOnly(btn, note);
+    else if (page) pageButton(btn, page);
     else if (rel.fallbackApk) { btn.href = rel.fallbackApk; btn.removeAttribute("aria-disabled"); }
     fetch(rel.updateJson + "?t=" + Date.now(), { cache: "no-store" })
       .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
       .then(function (m) {
-        if (!IOS) { btn.href = apkUrl(rel, m); btn.removeAttribute("aria-disabled"); }
+        if (!IOS && !page) { btn.href = apkUrl(rel, m); btn.removeAttribute("aria-disabled"); }
         if (ver) ver.textContent = "v" + m.versionName;
         if (dot) dot.className = "status-dot live";
         if (pill) replay(pill, "pop");
         if (meta) meta.innerHTML =
           "<dt>Version</dt><dd>v" + esc(m.versionName) + " (build " + esc(m.versionCode) + ")</dd>" +
-          "<dt>Size</dt><dd>" + fmtSize(m.size) + "</dd>" +
+          "<dt>Size</dt><dd>" + fmtSize(m.size) + "</dd>" + from +
           "<dt>SHA-256</dt><dd><code>" + esc(String(m.sha256).slice(0, 16)) + "…</code></dd>";
       })
       .catch(function () {
         if (dot) dot.className = "status-dot off";
-        if (ver) ver.textContent = rel.fallbackApk ? "latest" : "unavailable";
-        if (meta) meta.innerHTML = "<dt>Status</dt><dd>Could not read the current version" + (rel.fallbackApk ? "; the button gives the latest release." : ". Ask the seller for the link.") + "</dd>";
+        if (ver) ver.textContent = rel.fallbackApk ? "latest" : page ? "see page" : "unavailable";
+        if (meta) meta.innerHTML = "<dt>Status</dt><dd>Could not read the current version" +
+          (rel.fallbackApk ? "; the button gives the latest release." : page ? "; the button opens the download page." : ". Ask the seller for the link.") +
+          "</dd>" + from;
       });
   });
 
@@ -302,7 +464,9 @@
     a._nxT = setTimeout(function () {
       a.setAttribute("data-state", "done");
       if (note) {
-        note.textContent = "Your browser may ask you to confirm the download. When it has finished, open the file to install.";
+        note.textContent = a.hasAttribute("data-page")
+          ? "The download page opened in a new tab: press its Download button there. When the file has finished, open it to install."
+          : "Your browser may ask you to confirm the download. When it has finished, open the file to install.";
         note.hidden = false;
         replay(note, "dl-note");
       }
@@ -333,27 +497,14 @@
     if (target) { var dt = $("details", target); if (dt) dt.open = true; }
   }
 
-  // ---------- count up the coin numbers on the packs ----------
-  function countUp(el) {
-    var to = parseInt(el.textContent, 10);
-    if (!(to > 0) || reduce || !window.requestAnimationFrame) return;
-    var t0 = null, dur = 900;
-    var step = function (t) {
-      if (t0 === null) t0 = t;
-      var p = Math.min(1, (t - t0) / dur);
-      el.textContent = p < 1 ? Math.round(to * (1 - Math.pow(1 - p, 3))) : to;
-      if (p < 1) requestAnimationFrame(step);
-    };
-    el.textContent = "0";
-    requestAnimationFrame(step);
-  }
-
   // ---------- scroll reveal ----------
-  // Runs after the packs and tables above have been rendered, so they are included.
+  // Runs after the tables above have been rendered, so they are included.
   var groups = [
     ["main .section-head", ""],
     ["main .grid > *", ""],
     ["main .wrap > .steps > li", "left"],
+    ["main .order-steps > li", "left"],
+    ["main .order-card", ""],
     ["main .wrap > [data-usage]", ""],
     ["main .wrap > .chips", ""]
   ];
@@ -367,10 +518,7 @@
       revealEls.push(el);
     });
   });
-  var show = function (el) {
-    el.classList.add("in");
-    if (el.classList.contains("pack")) { var n = $(".coins", el); if (n) countUp(n); }
-  };
+  var show = function (el) { el.classList.add("in"); };
   if ("IntersectionObserver" in window) {
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) {
