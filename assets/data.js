@@ -10,7 +10,11 @@ window.NEXX = {
       updateJson: "https://xarwmwksfakwuhrwexxh.supabase.co/storage/v1/object/public/nexx-releases/update.json",
       apkBase: "https://xarwmwksfakwuhrwexxh.supabase.co/storage/v1/object/public/nexx-releases/",
       // Used if the live read fails. GitHub always redirects this to the newest release.
-      fallbackApk: "https://github.com/Nexx2131/Nexx-release/releases/latest/download/NEXX-Bot.apk"
+      fallbackApk: "https://github.com/Nexx2131/Nexx-release/releases/latest/download/NEXX-Bot.apk",
+      // Download page on a file host (the owner's, 2026-11-19): the Download APK button opens it in a new tab instead
+      // of downloading from GitHub. Each new NEXX Bot version: upload it there and paste its new link here.
+      // Leave "" to download straight from GitHub again.
+      downloadPage: "https://master-file-uploader.lovable.app/share/0def2666-c94c-4a58-ac2e-08cc673c9a5a"
     },
     farm: {
       name: "NEXX Farm",
@@ -21,7 +25,7 @@ window.NEXX = {
       // Download button opens that page in a new tab instead of taking the 17.7 MB APK from the NEXX server, so new
       // players' downloads use none of the server's data. Each new Farm version: upload it there too and paste its new
       // link here. Leave "" to download from the NEXX server as before.
-      downloadPage: ""
+      downloadPage: "https://master-file-uploader.lovable.app/share/6b594b24-8f80-43ec-b174-8a31904b6b2f"
     }
   },
 
