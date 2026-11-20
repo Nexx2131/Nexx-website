@@ -57,6 +57,8 @@ window.NEXX = {
     waitDays: 3,                      // as nexx.order_settings.wait_days
     // Where buyers DM their order number. An app with an empty link is left out of the form's "Where we can reach
     // you" and gets no DM button: put the Discord invite here and Discord appears by itself.
+    // discord: empty on purpose (owner, 2026-11-20: "Footer icon only"). The Discord invite is only in `socials` below:
+    // here it would add Discord to the form, and the success screen would say "DM @cocnexx from Discord".
     dm: { handle: "@cocnexx", telegram: "https://t.me/cocnexx", instagram: "https://ig.me/m/cocnexx", discord: "" }
   },
 
@@ -71,6 +73,6 @@ window.NEXX = {
   socials: [
     { id: "instagram", label: "Instagram", href: "https://www.instagram.com/cocnexx/" },
     { id: "telegram",  label: "Telegram",  href: "https://t.me/cocnexx" },
-    { id: "discord",   label: "Discord",   href: "" } // TODO: the owner sends the server invite later
+    { id: "discord",   label: "Discord",   href: "https://discord.gg/8x2JwvvvmQ" } // the NEXX server, live 2026-11-20
   ]
 };
